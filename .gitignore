@@ -8,3 +8,6 @@ nrfxlib/*
 test/*
 tools/*
 zephyr/*
+*__pycache__*
+*db.sqlite3*
+*migrations*

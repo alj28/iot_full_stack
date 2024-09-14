@@ -1,2 +1,3 @@
 -r requirements_base.txt
 -r ./zephyr/scripts/requirements.txt
+-r ./backend/requirements.txt
