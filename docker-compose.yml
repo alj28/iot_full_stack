@@ -16,3 +16,15 @@ services:
       - ./backend:/app
     ports:
       - "8000:8000"
+
+  mqtt:
+    image: eclipse-mosquitto:latest
+    container_name: mqtt
+    ports:
+      - "1883:1883"    # MQTT port
+      - "9001:9001"    # WebSocket port (optional)
+    volumes:
+      - ./containers_data/mosquitto/data:/mosquitto/data
+      - ./containers_data/mosquitto/config:/mosquitto/config
+      - ./containers_data/mosquitto/log:/mosquitto/log
+    restart: unless-stopped
