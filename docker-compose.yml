@@ -28,3 +28,29 @@ services:
       - ./containers_data/mosquitto/config:/mosquitto/config
       - ./containers_data/mosquitto/log:/mosquitto/log
     restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - zigbee_network
+
+  zigbee2mqtt:
+    image: koenkk/zigbee2mqtt
+    container_name: zigbee2mqtt
+    restart: always
+    ports:
+      - "8080:8080"  
+    volumes:
+      - ./containers_data/zigbee2mqtt/config:/app/data
+    devices:
+      - "/dev/ttyACM0:/dev/ttyACM0"  
+    environment:
+      - TZ=Europe/Berlin  # Adjust the timezone if needed
+      - MQTT_SERVER=mqtt://mqtt:1883
+    depends_on:
+      - mqtt
+    networks:
+      - zigbee_network
+      
+
+networks:
+  zigbee_network:

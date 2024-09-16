@@ -1,0 +1,18 @@
+serial:
+  adapter: ember
+  port: /dev/ttyACM0
+  rtscts: false
+mqtt:
+  base_topic: zigbee2mqtt
+  #server: mqtt://192.168.0.105:1883
+  server: 'mqtt://mqtt:1883'
+frontend:
+  port: 8080
+logger:
+  level: debug
+advanced:
+  homeassistant_legacy_entity_attributes: false
+  legacy_api: false
+  legacy_availability_payload: false
+device_options:
+  legacy: false

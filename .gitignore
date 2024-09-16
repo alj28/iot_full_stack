@@ -11,3 +11,7 @@ zephyr/*
 *__pycache__*
 *db.sqlite3*
 *migrations*
+*coordinator_backup.json
+*database.db
+*log*
+*state.json
