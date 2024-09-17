@@ -4,8 +4,7 @@ serial:
   rtscts: false
 mqtt:
   base_topic: zigbee2mqtt
-  #server: mqtt://192.168.0.105:1883
-  server: 'mqtt://mqtt:1883'
+  server: mqtt://mqtt:1883
 frontend:
   port: 8080
 logger:
@@ -16,3 +15,6 @@ advanced:
   legacy_availability_payload: false
 device_options:
   legacy: false
+devices:
+  '0xf082c0fffe81c65a':
+    friendly_name: Stikalo-Ikea

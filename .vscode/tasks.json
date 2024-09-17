@@ -1,0 +1,23 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build APP nRF52840-DK",
+            "type": "shell",
+            "command": "west build -b nrf52840dk/nrf52840",
+            "options": {
+                "cwd": "${workspaceFolder}/device"
+            }
+        },
+        {
+            "label": "Build BOOTLOADER nRF52840-DK",
+            "type": "shell",
+            "command": "west build -b nrf52840dk/nrf52840",
+            "options": {
+                "cwd": "${workspaceFolder}/device_bootloader"
+            }
+        }
+    ]
+}

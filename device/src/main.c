@@ -8,7 +8,7 @@ int main(void)
 {
 	while (1) 
 	{
-		printf("Test\r\n");
+		//printf("Test\r\n");
 		k_msleep(SLEEP_TIME_MS);
 	}
 	return 0;
