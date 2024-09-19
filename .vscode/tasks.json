@@ -6,17 +6,9 @@
         {
             "label": "Build APP nRF52840-DK",
             "type": "shell",
-            "command": "west build -b nrf52840dk/nrf52840",
+            "command": "west build --sysbuild",
             "options": {
                 "cwd": "${workspaceFolder}/device"
-            }
-        },
-        {
-            "label": "Build BOOTLOADER nRF52840-DK",
-            "type": "shell",
-            "command": "west build -b nrf52840dk/nrf52840",
-            "options": {
-                "cwd": "${workspaceFolder}/device_bootloader"
             }
         }
     ]

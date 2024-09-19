@@ -1,0 +1,19 @@
+mcuboot:
+  address: 0x00000000
+  size: 0x0C000
+
+image_0:
+  address: 0x0000C000
+  size: 0x0E000
+
+image_1:
+  address: 0x0001A000
+  size: 0x0E000
+
+image_scratch:
+  address: 0x00028000
+  size: 0x04000
+
+storage:
+  address: 0x0002C000
+  size: 0x04000

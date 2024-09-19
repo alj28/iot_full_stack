@@ -1,0 +1,10 @@
+[manifest]
+path = device
+file = west.yml
+
+[zephyr]
+base = zephyr
+
+[build]
+board = nrf52840dk/nrf52840
+
