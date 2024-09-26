@@ -18,3 +18,5 @@ device_options:
 devices:
   '0xf082c0fffe81c65a':
     friendly_name: Stikalo-Ikea
+  '0xf4ce3620277fadba':
+    friendly_name: '0xf4ce3620277fadba'

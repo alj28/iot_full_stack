@@ -7,6 +7,9 @@
 	"settings": {
 		"nrf-connect.applications": [
 			"${workspaceFolder}/device"
-		]
+		],
+		"files.associations": {
+			"zboss_api.h": "c"
+		}
 	}
 }

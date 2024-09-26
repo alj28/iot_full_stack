@@ -1,12 +1,20 @@
 
 #include <stdio.h>
+#include <zboss_api.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zigbee/zigbee_app_utils.h>
 #include <zephyr/linker/linker-defs.h>
+#include <zigbee/zigbee_error_handler.h>
 
 #define SLEEP_TIME_MS	1000UL
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
+
+void zboss_signal_handler(zb_bufid_t bufid)
+{
+	zigbee_default_signal_handler(bufid);
+}
 
 int main(void)
 {
