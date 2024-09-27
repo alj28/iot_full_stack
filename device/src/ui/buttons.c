@@ -7,7 +7,7 @@
 
 #include "buttons.h"
 
-LOG_MODULE_REGISTER(ui, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(ui_button, LOG_LEVEL_INF);
 
 #define BUTTONS_READ_PERIOD         K_MSEC(250)
 

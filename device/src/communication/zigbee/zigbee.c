@@ -7,6 +7,7 @@
 #include <zigbee/zigbee_error_handler.h>
 
 #include "zigbee.h"
+#include "leds.h"
 
 
 LOG_MODULE_REGISTER(zigbee, LOG_LEVEL_INF);
@@ -23,6 +24,8 @@ static int init(void) {
     /*  Enabling zigbee will automatically start network steering.
      */
     zigbee_enable();
+
+    led_set_state_blink(LED_1, 500);
     return 0;
 }
 
