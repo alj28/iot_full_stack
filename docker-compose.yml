@@ -42,7 +42,7 @@ services:
     volumes:
       - ./containers_data/zigbee2mqtt/config:/app/data
     devices:
-      - "/dev/ttyACM0:/dev/ttyACM0"  
+      - "/dev/ttyACM2:/dev/ttyACM2"  
     environment:
       - TZ=Europe/Berlin  # Adjust the timezone if needed
       - MQTT_SERVER=mqtt://mqtt:1883

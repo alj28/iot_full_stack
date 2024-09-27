@@ -13,10 +13,6 @@
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
-void zboss_signal_handler(zb_bufid_t bufid)
-{
-	zigbee_default_signal_handler(bufid);
-}
 
 int main(void)
 {

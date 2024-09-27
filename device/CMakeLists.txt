@@ -21,5 +21,5 @@ target_include_directories(
     src/
 )
 
-#add_subdirectory(src/communication/)
+add_subdirectory(src/communication)
 add_subdirectory(src/ui)

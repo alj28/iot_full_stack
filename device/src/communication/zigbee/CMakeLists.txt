@@ -2,7 +2,8 @@
 target_sources(
     app
     PRIVATE
-    ./commissioning.c
+    ./zigbee.c
+    ./zigbee_commissioning.c
 )
 
 target_include_directories(

@@ -3,5 +3,5 @@
 
 
 int zigbee_commissioning_start(void) {
-    
+    return 0;
 }
