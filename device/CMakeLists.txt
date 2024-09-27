@@ -8,4 +8,18 @@ project(device)
 # used when building MCUboot.
 test_sysbuild()
 
-target_sources(app PRIVATE src/main.c)
+target_sources(
+    app 
+    PRIVATE 
+    src/main.c
+    src/commands.c
+)
+
+target_include_directories(
+    app
+    PUBLIC
+    src/
+)
+
+#add_subdirectory(src/communication/)
+add_subdirectory(src/ui)

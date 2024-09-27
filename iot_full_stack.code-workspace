@@ -9,7 +9,25 @@
 			"${workspaceFolder}/device"
 		],
 		"files.associations": {
-			"zboss_api.h": "c"
+			"zboss_api.h": "c",
+			"buttons.h": "c",
+			"gpio.h": "c",
+			"zigbee_app_utils.h": "c"
+		},
+		"nrf-connect.debugging.bindings": {
+			"${workspaceFolder}/device/build/device": "Launch device"
 		}
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"type": "nrf-connect",
+				"request": "launch",
+				"name": "Launch device",
+				"config": "${workspaceFolder}/device/build/device",
+				"runToEntryPoint": "main"
+			}
+		]
 	}
 }
