@@ -13,7 +13,10 @@
 			"buttons.h": "c",
 			"gpio.h": "c",
 			"zigbee_app_utils.h": "c",
-			"leds.h": "c"
+			"leds.h": "c",
+			"zigbee.h": "c",
+			"zigbee_error_handler.h": "c",
+			"sensor.h": "c"
 		},
 		"nrf-connect.debugging.bindings": {
 			"${workspaceFolder}/device/build/device": "Launch device"
