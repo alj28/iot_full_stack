@@ -9,167 +9,168 @@
 #include <zcl/zb_zcl_temp_measurement_addons.h>
 #include <zb_ha_device_config.h>
 
+#include "zb_temperature_sensor.h"
 #include "zigbee.h"
 #include "leds.h"
 
 LOG_MODULE_REGISTER(zigbee, LOG_LEVEL_INF);
 
-#define ZIGBEE_ENDPOINT                     10
-#define APP_ZIGBEE_OBSERVE_TEMP_INTERVAL    (ZB_TIME_ONE_SECOND * 30)
+#define TEMPERATURE_MEASUREMENT_ENDPOINT        1U
+#define APP_ZIGBEE_OBSERVE_TEMP_INTERVAL        (ZB_TIME_ONE_SECOND * 30)
 
-#define FACTORY_RESET_BUTTON       DK_BTN4_MSK
-
-/* Main application customizable context.
- * Stores all settings and static values.
+/*  Main application's context.
  */
-struct zb_device_ctx {
-	zb_zcl_basic_attrs_t basic_attr;
-	zb_zcl_identify_attrs_t identify_attr;
-    zb_zcl_temp_measurement_attrs_t temp_attrs;
-};
-static struct zb_device_ctx dev_ctx = {
-    .basic_attr.power_source = ZB_ZCL_BASIC_POWER_SOURCE_BATTERY,
-    .basic_attr.zcl_version = ZB_ZCL_VERSION,
-    .identify_attr.identify_time = ZB_ZCL_IDENTIFY_IDENTIFY_TIME_DEFAULT_VALUE,
-	.temp_attrs.measure_value = ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_UNKNOWN,
-	.temp_attrs.min_measure_value = (-50 * 100),
-	.temp_attrs.max_measure_value = (150 * 100),
-	.temp_attrs.tolerance = (1)
-};
+typedef struct {
+    zb_zcl_basic_attrs_ext_t basic_attr;
+    zb_zcl_identify_attrs_t identify_attr;
+    zb_zcl_on_off_attrs_t on_off_attr;
+    zb_zcl_temp_measurement_attrs_t temperature_measurement_attr;
+} temperature_sensor_ctx_t;
+static temperature_sensor_ctx_t dev_ctx;
 
 ZB_ZCL_DECLARE_IDENTIFY_ATTRIB_LIST(
-	identify_attr_list,
-	&dev_ctx.identify_attr.identify_time
+    identify_attr_list,
+    &dev_ctx.identify_attr.identify_time
 );
 
-ZB_ZCL_DECLARE_BASIC_ATTRIB_LIST(
+ZB_ZCL_DECLARE_BASIC_ATTRIB_LIST_EXT(
 	basic_attr_list,
 	&dev_ctx.basic_attr.zcl_version,
-	&dev_ctx.basic_attr.power_source
+	&dev_ctx.basic_attr.app_version,
+	&dev_ctx.basic_attr.stack_version,
+	&dev_ctx.basic_attr.hw_version,
+	dev_ctx.basic_attr.mf_name,
+	dev_ctx.basic_attr.model_id,
+	dev_ctx.basic_attr.date_code,
+	&dev_ctx.basic_attr.power_source,
+	dev_ctx.basic_attr.location_id,
+	&dev_ctx.basic_attr.ph_env,
+	dev_ctx.basic_attr.sw_ver
+);
+
+ZB_ZCL_DECLARE_ON_OFF_ATTRIB_LIST(
+	on_off_attr_list,
+	&dev_ctx.on_off_attr.on_off
 );
 
 ZB_ZCL_DECLARE_TEMP_MEASUREMENT_ATTRIB_LIST(
-	temperature_measurement_attr_list,
-	&dev_ctx.temp_attrs.measure_value,
-	&dev_ctx.temp_attrs.min_measure_value,
-	&dev_ctx.temp_attrs.max_measure_value,
-	&dev_ctx.temp_attrs.tolerance
+    temperature_measurement_attr_list,
+    &dev_ctx.temperature_measurement_attr.measure_value,
+    &dev_ctx.temperature_measurement_attr.min_measure_value,
+    &dev_ctx.temperature_measurement_attr.max_measure_value,
+    &dev_ctx.temperature_measurement_attr.tolerance
 );
 
-#define DEVICE_CLUSTER_LIST(            \
-    cluster_list_name,                  \
-    basic_attr_list,                    \
-    indentify_attr_list,                \
-    temperature_measurement_attr_list   \
-    )                                   \
-    zb_zcl_cluster_desc_t cluster_list_name[] =                     \
-    {                                                               \
-        ZB_ZCL_CLUSTER_DESC(                                        \
-            ZB_ZCL_CLUSTER_ID_BASIC,                                \
-            ZB_ZCL_ARRAY_SIZE(basic_attr_list, zb_zcl_attr_t),      \
-            (basic_attr_list),                                      \
-            ZB_ZCL_CLUSTER_SERVER_ROLE,                             \
-            ZB_ZCL_MANUF_CODE_INVALID                               \
-        ),                                                          \
-        ZB_ZCL_CLUSTER_DESC(                                        \
-            ZB_ZCL_CLUSTER_ID_IDENTIFY,                             \
-            ZB_ZCL_ARRAY_SIZE(indentify_attr_list, zb_zcl_attr_t),  \
-            (indentify_attr_list),                                  \
-            ZB_ZCL_CLUSTER_SERVER_ROLE,                             \
-            ZB_ZCL_MANUF_CODE_INVALID                               \
-        ),                                                          \
-        ZB_ZCL_CLUSTER_DESC(                                        \
-            ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,                                     \
-            ZB_ZCL_ARRAY_SIZE(temperature_measurement_attr_list, zb_zcl_attr_t),    \
-            (temperature_measurement_attr_list),                                    \
-            ZB_ZCL_CLUSTER_SERVER_ROLE,                             \
-            ZB_ZCL_MANUF_CODE_INVALID                               \
-        )                                                           \
-    }
-
-DEVICE_CLUSTER_LIST(
-    device_cluster_list,
+ZB_DECLARE_TEMPERATURE_SENSOR_CLUSTER_LIST(
+    temperature_sensor_clusters,
     basic_attr_list,
     identify_attr_list,
     temperature_measurement_attr_list
 );
 
-#define ZB_ZCL_DECLARE_DEVICE_DESC(     \
-	ep_name,				            \
-	ep_id,					            \
-	in_clust_num,			            \
-	out_clust_num			            \
-)							            \
-	ZB_DECLARE_SIMPLE_DESC(in_clust_num, out_clust_num);							\
-	ZB_AF_SIMPLE_DESC_TYPE(in_clust_num, out_clust_num) simple_desc_##ep_name = 		\
-	{																				\
-		ep_id,																		\
-		ZB_AF_HA_PROFILE_ID,														\
-		0x0302,											\
-		0,										\
-		0,																			\
-		in_clust_num,																\
-		out_clust_num,																\
-		{																			\
-			ZB_ZCL_CLUSTER_ID_BASIC,												\
-			ZB_ZCL_CLUSTER_ID_IDENTIFY,												\
-			ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT										\
-		}																			\
-	}	
+ZB_DECLARE_TEMPERATURE_SENSOR_EP(
+    temperature_sensor_ep,
+    TEMPERATURE_MEASUREMENT_ENDPOINT,
+    temperature_sensor_clusters
+);
 
-#define ZB_HA_DECLARE_DEVICE_EP(ep_name, ep_id, cluster_list)   \
-    ZB_ZCL_DECLARE_DEVICE_DESC(             \
-        ep_name,                            \
-        ep_id,                              \
-        4,                                  \
-        0                                   \
-    );                                      \
-    ZBOSS_DEVICE_DECLARE_REPORTING_CTX(     \
-        reporting_info##ep_name,            \
-        1                                   \
-    );                                      \
-    ZB_AF_DECLARE_ENDPOINT_DESC(            \
-        ep_name,                            \
-        ep_id,                              \
-        ZB_AF_HA_PROFILE_ID,                \
-        0,                                  \
-        NULL,                               \
-        ZB_ZCL_ARRAY_SIZE(cluster_list, zb_zcl_cluster_desc_t),     \
-        cluster_list,                                               \
-        (zb_af_simple_desc_1_1_t *)&simple_desc_##ep_name,           \
-        1,                                                          \
-        reporting_info##ep_name,                                    \
-        0, NULL                                                     \
-    )               
-/* Endpoint setup (single) */
-ZB_HA_DECLARE_DEVICE_EP(
-	device_ep,
-	10,
-	device_cluster_list);
-
-/* Device context */
 ZBOSS_DECLARE_DEVICE_CTX_1_EP(
-	device_ctx,
-	device_ep);
+    temperature_sensor_ctx,
+    temperature_sensor_ep
+);
+
+
+static void clusters_attr_init(void) {
+    dev_ctx.basic_attr.zcl_version = ZB_ZCL_VERSION;
+    dev_ctx.basic_attr.app_version = 1;
+    dev_ctx.basic_attr.stack_version = 10;
+    dev_ctx.basic_attr.hw_version = 11;
+
+    ZB_ZCL_SET_STRING_VAL(
+        dev_ctx.basic_attr.mf_name,
+        "Demo",
+        ZB_ZCL_STRING_CONST_SIZE("Demo")
+    );
+
+    ZB_ZCL_SET_STRING_VAL(
+        dev_ctx.basic_attr.model_id,
+        "DemoTempSensor",
+        ZB_ZCL_STRING_CONST_SIZE("DemoTempSensor")
+    );
+
+    ZB_ZCL_SET_STRING_VAL(
+        dev_ctx.basic_attr.date_code,
+        "20240930",
+        ZB_ZCL_STRING_CONST_SIZE("20240930")
+    );
+
+    dev_ctx.basic_attr.power_source = ZB_ZCL_BASIC_POWER_SOURCE_BATTERY;
+
+    ZB_ZCL_SET_STRING_VAL(
+        dev_ctx.basic_attr.location_id,
+        "DemoLocation",
+        ZB_ZCL_STRING_CONST_SIZE("DemoLocation")
+    );
+
+    dev_ctx.basic_attr.ph_env = ZB_ZCL_BASIC_ENV_UNSPECIFIED;
+
+    ZB_ZCL_SET_STRING_VAL(
+        dev_ctx.basic_attr.sw_ver,
+        "v1.0.0",
+        ZB_ZCL_STRING_CONST_SIZE("v1.0.0")
+    );
+
+    dev_ctx.identify_attr.identify_time = ZB_ZCL_IDENTIFY_IDENTIFY_TIME_DEFAULT_VALUE;
+
+    dev_ctx.on_off_attr.on_off = (zb_bool_t)ZB_ZCL_ON_OFF_IS_ON;
+
+    dev_ctx.temperature_measurement_attr.max_measure_value = INT16_MAX;
+    dev_ctx.temperature_measurement_attr.measure_value = 0L;
+    dev_ctx.temperature_measurement_attr.min_measure_value = -INT16_MAX;
+    dev_ctx.temperature_measurement_attr.tolerance = 10L;
+
+
+    // initialization of the attribute value in Zigbee stack
+    ZB_ZCL_SET_ATTRIBUTE(
+        TEMPERATURE_MEASUREMENT_ENDPOINT,
+        ZB_ZCL_CLUSTER_ID_ON_OFF,
+        ZB_ZCL_CLUSTER_SERVER_ROLE,
+        ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID,
+        (zb_uint8_t*)&dev_ctx.on_off_attr.on_off,
+        ZB_FALSE
+    );
+
+    ZB_ZCL_SET_ATTRIBUTE(
+        TEMPERATURE_MEASUREMENT_ENDPOINT,
+        ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,
+        ZB_ZCL_CLUSTER_SERVER_ROLE,
+        ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID,
+        (zb_uint8_t*)&dev_ctx.temperature_measurement_attr.measure_value,
+        ZB_FALSE
+    );
+}
+
+
+static void identify_cb(zb_bufid_t bufid)
+{
+    LOG_INF("Identify CB");
+}
+
+
 
 void zboss_signal_handler(zb_bufid_t bufid) {
 	zigbee_default_signal_handler(bufid);
-    
+    if (bufid) { zb_buf_free(bufid); }
 }
 
-static void identify_callback(zb_bufid_t bufid) {
-    LOG_INF("Indentify callback invoked.");
-}
+
 
 
 static int init(void) {
     LOG_INF("Starting Zigbee thread.");
-
-    ZB_AF_REGISTER_DEVICE_CTX(&device_ctx);
-
-	/* Register callback to identify notifications */
-	ZB_AF_SET_IDENTIFY_NOTIFICATION_HANDLER(10, identify_callback);
-
+    clusters_attr_init();
+    ZB_AF_REGISTER_DEVICE_CTX(&temperature_sensor_ctx);
+    ZB_AF_SET_IDENTIFY_NOTIFICATION_HANDLER(TEMPERATURE_MEASUREMENT_ENDPOINT, identify_cb);
     zigbee_enable();
 
 
