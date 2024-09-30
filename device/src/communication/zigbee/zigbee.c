@@ -8,6 +8,7 @@
 #include <zigbee/zigbee_error_handler.h>
 #include <zcl/zb_zcl_temp_measurement_addons.h>
 #include <zb_ha_device_config.h>
+#include <zephyr/kernel.h>
 
 #include "zb_temperature_sensor.h"
 #include "zigbee.h"
@@ -151,8 +152,7 @@ static void clusters_attr_init(void) {
 }
 
 
-static void identify_cb(zb_bufid_t bufid)
-{
+static void identify_cb(zb_bufid_t bufid) {
     LOG_INF("Identify CB");
 }
 
@@ -163,9 +163,25 @@ void zboss_signal_handler(zb_bufid_t bufid) {
     if (bufid) { zb_buf_free(bufid); }
 }
 
+static void temperature_measurement_set_value(zb_int16_t measurement) {
+    ZB_ZCL_SET_ATTRIBUTE(
+        TEMPERATURE_MEASUREMENT_ENDPOINT,
+        ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,
+        ZB_ZCL_CLUSTER_SERVER_ROLE,
+        ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID,
+        (zb_uint8_t*)&measurement,
+        ZB_FALSE
+    );
+}
+
+static void temperature_update_task(struct k_timer *timer) {
+    static zb_int16_t temp = 0;
+    temp = (temp + 1L) % 80;
+    temperature_measurement_set_value((temp - 40) * 100);
+} 
 
 
-
+struct k_timer timer;
 static int init(void) {
     LOG_INF("Starting Zigbee thread.");
     clusters_attr_init();
@@ -173,6 +189,8 @@ static int init(void) {
     ZB_AF_SET_IDENTIFY_NOTIFICATION_HANDLER(TEMPERATURE_MEASUREMENT_ENDPOINT, identify_cb);
     zigbee_enable();
 
+    k_timer_init(&timer, temperature_update_task, NULL);
+    k_timer_start(&timer, K_MSEC(500), K_MSEC(500));
 
     return 0;
 }
