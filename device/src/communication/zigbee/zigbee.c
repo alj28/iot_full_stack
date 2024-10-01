@@ -10,7 +10,7 @@
 #include <zb_ha_device_config.h>
 #include <zephyr/kernel.h>
 
-#include "zb_temperature_sensor.h"
+#include "zb_helper.h"
 #include "zigbee.h"
 #include "leds.h"
 
@@ -66,7 +66,8 @@ ZB_DECLARE_TEMPERATURE_SENSOR_CLUSTER_LIST(
     temperature_sensor_clusters,
     basic_attr_list,
     identify_attr_list,
-    temperature_measurement_attr_list
+    temperature_measurement_attr_list,
+    on_off_attr_list
 );
 
 ZB_DECLARE_TEMPERATURE_SENSOR_EP(
@@ -79,6 +80,25 @@ ZBOSS_DECLARE_DEVICE_CTX_1_EP(
     temperature_sensor_ctx,
     temperature_sensor_ep
 );
+
+void zcl_device_cb(zb_bufid_t bufid)
+{
+    zb_zcl_device_callback_param_t *device_cb_param =
+        ZB_BUF_GET_PARAM(bufid, zb_zcl_device_callback_param_t);
+
+    if (device_cb_param->device_cb_id == ZB_ZCL_SET_ATTR_VALUE_CB_ID) {
+        if (device_cb_param->cb_param.set_attr_value_param.cluster_id == ZB_ZCL_CLUSTER_ID_ON_OFF &&
+            device_cb_param->cb_param.set_attr_value_param.attr_id == ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID) {
+            dev_ctx.on_off_attr.on_off = device_cb_param->cb_param.set_attr_value_param.values.data8;
+
+            if (dev_ctx.on_off_attr.on_off) {
+                LOG_INF("OnOff: ON");
+            } else {
+                LOG_INF("OnOff: OFF");
+            }
+        }
+    }
+}
 
 
 static void clusters_attr_init(void) {
@@ -177,7 +197,9 @@ static void temperature_measurement_set_value(zb_int16_t measurement) {
 static void temperature_update_task(struct k_timer *timer) {
     static zb_int16_t temp = 0;
     temp = (temp + 1L) % 80;
-    temperature_measurement_set_value((temp - 40) * 100);
+    if (dev_ctx.on_off_attr.on_off) {
+        temperature_measurement_set_value((temp - 40) * 100);
+    }
 } 
 
 
@@ -187,6 +209,7 @@ static int init(void) {
     clusters_attr_init();
     ZB_AF_REGISTER_DEVICE_CTX(&temperature_sensor_ctx);
     ZB_AF_SET_IDENTIFY_NOTIFICATION_HANDLER(TEMPERATURE_MEASUREMENT_ENDPOINT, identify_cb);
+    ZB_ZCL_REGISTER_DEVICE_CB(zcl_device_cb);
     zigbee_enable();
 
     k_timer_init(&timer, temperature_update_task, NULL);

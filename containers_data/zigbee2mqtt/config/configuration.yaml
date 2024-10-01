@@ -2,6 +2,8 @@ serial:
   adapter: ember
   port: /dev/ttyACM2
   rtscts: false
+external_converters:
+  - converter.js
 mqtt:
   base_topic: zigbee2mqtt
   server: mqtt://mqtt:1883

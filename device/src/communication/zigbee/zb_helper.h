@@ -1,5 +1,5 @@
-#ifndef _ZB_TEMPERATURE_SENSOR_H_
-#define _ZB_TEMPERATURE_SENSOR_H_
+#ifndef _ZB_HELPER_H_
+#define _ZB_HELPER_H_
 
 #include <zcl/zb_zcl_temp_measurement_addons.h>
 
@@ -8,7 +8,7 @@
 
 #define ZB_DEVICE_VER_TEMPERATURE_SENSOR    1
 
-#define ZB_TEMPERATURE_SENSOR_IN_CLUSTER_NUM    3
+#define ZB_TEMPERATURE_SENSOR_IN_CLUSTER_NUM    4
 #define ZB_TEMPERATURE_SENSOR_OUT_CLUSTER_NUM   0
 #define ZB_TEMPERATURE_SENSOR_CLUSTER_NUM   \
             (ZB_TEMPERATURE_SENSOR_IN_CLUSTER_NUM + ZB_TEMPERATURE_SENSOR_OUT_CLUSTER_NUM)
@@ -30,7 +30,8 @@
 	cluster_list_name,							   \
 	basic_attr_list,							   \
 	identify_attr_list,							   \
-	temperature_measurement_attr_list)			    \
+	temperature_measurement_attr_list,				\
+	on_off_attr_list)			    \
 	zb_zcl_cluster_desc_t cluster_list_name[] =				   \
 	{									   \
 		ZB_ZCL_CLUSTER_DESC(						   \
@@ -53,7 +54,14 @@
 			(temperature_measurement_attr_list),					   \
 			ZB_ZCL_CLUSTER_SERVER_ROLE,				   \
 			ZB_ZCL_MANUF_CODE_INVALID				   \
-		)								   \
+		),											\
+		ZB_ZCL_CLUSTER_DESC(						   \
+			ZB_ZCL_CLUSTER_ID_ON_OFF,				   \
+			ZB_ZCL_ARRAY_SIZE(on_off_attr_list, zb_zcl_attr_t),	   \
+			(on_off_attr_list),					   \
+			ZB_ZCL_CLUSTER_SERVER_ROLE,				   \
+			ZB_ZCL_MANUF_CODE_INVALID				   \
+		)											\
 	}
 
 /**
@@ -75,9 +83,10 @@
 		in_clust_num,									  \
 		out_clust_num,									  \
 		{										  \
-			ZB_ZCL_CLUSTER_ID_BASIC,						  \
 			ZB_ZCL_CLUSTER_ID_IDENTIFY,						  \
-            ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT               \
+			ZB_ZCL_CLUSTER_ID_BASIC,						  \
+            ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,               \
+			ZB_ZCL_CLUSTER_ID_ON_OFF	\
 		}										  \
 	}
 
@@ -104,4 +113,4 @@
 			ZB_TEMPERATURE_SENSOR_CVC_ATTR_COUNT,			      \
 			cvc_alarm_info## ep_name)
 
-#endif /* _ZB_TEMPERATURE_SENSOR_H_ */
+#endif /* _ZB_HELPER_H_ */
