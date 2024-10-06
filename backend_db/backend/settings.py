@@ -25,10 +25,18 @@ SECRET_KEY = 'django-insecure-@ef88%j8t@j#vu2@0i&bwl=ve&=q-%x!z5e0$g9f+ehb8y=i*j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+"""
+    Convert this to environment variables set-up in docker-compose file.
+    environment:
+        - ALLOWED_HOSTS=web,localhost,127.0.0.1
+    ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+"""
 ALLOWED_HOSTS = [
+    'backend_db',
     'localhost',
     '0.0.0.0',
-    '127.0.0.1'
+    '127.0.0.1',
+    '192.168.0.105',
 ]
 
 # Application definition

@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  backend:
+  backend_db:
     build:
       context: ./backend_db  # Directory containing Dockerfile
       dockerfile: Dockerfile
@@ -16,6 +16,8 @@ services:
       - ./backend_db:/app
     ports:
       - "8000:8000"
+    networks:
+      - zigbee_network
 
   mqtt:
     image: eclipse-mosquitto:latest
@@ -29,7 +31,7 @@ services:
       - ./containers_data/mosquitto/log:/mosquitto/log
     restart: unless-stopped
     depends_on:
-      - backend
+      - backend_db
     networks:
       - zigbee_network
 
@@ -51,6 +53,18 @@ services:
     networks:
       - zigbee_network
       
+  backend_hub:
+    build:
+      context: ./backend_hub  # Directory containing Dockerfile
+      dockerfile: Dockerfile
+    container_name: backend_hub
+    volumes:
+      - ./backend_hub:/app
+    depends_on:
+      - mqtt
+      - backend_db
+    networks:
+      - zigbee_network
 
 networks:
   zigbee_network:
