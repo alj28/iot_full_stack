@@ -5,7 +5,7 @@ from device.models import Device
 
 class TemperatureLog(models.Model):
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_created=True)    # at creation store date and time
+    created_at = models.DateTimeField(auto_now_add=True)    # at creation store date and time
     temperature = models.FloatField()
 
     def __str__(self):
