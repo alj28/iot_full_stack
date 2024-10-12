@@ -1,13 +1,11 @@
 
 #include <stdio.h>
-#include <zboss_api.h>
+
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
-#include <zigbee/zigbee_app_utils.h>
-#include <zephyr/linker/linker-defs.h>
-#include <zigbee/zigbee_error_handler.h>
 
-#include "buttons.h"
+#include "board_utils.h"
+
 
 #define SLEEP_TIME_MS	100UL
 
@@ -17,7 +15,7 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 int main(void)
 {
 	LOG_INF("Application image boots up.");
-	LOG_INF("Address of sample %p\n", (void *)__rom_region_start);
+	//LOG_INF("Address of sample %p\n", (void *)__rom_region_start);
 
 
 
@@ -26,6 +24,9 @@ int main(void)
 		//printf("Test\r\n");
 
 		k_msleep(SLEEP_TIME_MS);
+		POSIX_SPECIFIC_SECTION({
+			k_cpu_idle();
+		})
 	}
 	return 0;
 }

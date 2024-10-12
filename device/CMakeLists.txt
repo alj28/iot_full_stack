@@ -21,5 +21,7 @@ target_include_directories(
     src/
 )
 
-add_subdirectory(src/communication)
-add_subdirectory(src/ui)
+if(${BOARD} STREQUAL "nrf52840dk")
+    add_subdirectory(src/communication)
+    add_subdirectory(src/ui)
+endif()

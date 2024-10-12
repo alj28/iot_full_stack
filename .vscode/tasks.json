@@ -18,6 +18,22 @@
             "options": {
                 "cwd": "${workspaceFolder}/device"
             }
-        }
+        },
+        {
+            "label": "Build APP native-posix",
+            "type": "shell",
+            "command": "west build -b naptive_posix",
+            "options": {
+                "cwd": "${workspaceFolder}/device"
+            }
+        },
+        {
+            "label": "Run APP native-posix",
+            "type": "shell",
+            "command": "./build/zephyr/zephyr.exe -attach_uart",
+            "options": {
+                "cwd": "${workspaceFolder}/device"
+            }
+        },
     ]
 }
