@@ -25,10 +25,23 @@ SECRET_KEY = 'django-insecure-@ef88%j8t@j#vu2@0i&bwl=ve&=q-%x!z5e0$g9f+ehb8y=i*j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+"""
+    Convert this to environment variables set-up in docker-compose file.
+    environment:
+        - ALLOWED_HOSTS=web,localhost,127.0.0.1
+    ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+"""
 ALLOWED_HOSTS = [
+    'backend_db',
     'localhost',
     '0.0.0.0',
-    '127.0.0.1'
+    '127.0.0.1',
+    '192.168.0.105',
+    'host.docker.internal'
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://192.168.0.105:3000',  # If React app is served from this IP
 ]
 
 # Application definition
@@ -40,7 +53,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'device'
+    'device',
+    'temperature_logger',
+    'rest_framework',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -51,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -102,6 +119,15 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',  # This is for JSON responses
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Ensure this is present
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
 
 
 # Internationalization

@@ -22,3 +22,7 @@ devices:
     friendly_name: Stikalo-Ikea
   '0xf4ce3620277fadba':
     friendly_name: '0xf4ce3620277fadba'
+    filtered_cache:
+      - state
+    homeassistant: {}
+    optimistic: true

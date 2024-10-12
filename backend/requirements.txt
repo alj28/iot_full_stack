@@ -1,3 +1,0 @@
-Django==4.2.12
-djangorestframework==3.15.2
-paho-mqtt==2.1.0
