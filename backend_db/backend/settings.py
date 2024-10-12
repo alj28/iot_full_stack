@@ -37,6 +37,11 @@ ALLOWED_HOSTS = [
     '0.0.0.0',
     '127.0.0.1',
     '192.168.0.105',
+    'host.docker.internal'
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://192.168.0.105:3000',  # If React app is served from this IP
 ]
 
 # Application definition
@@ -50,7 +55,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'device',
     'temperature_logger',
-    'rest_framework'
+    'rest_framework',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -61,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'

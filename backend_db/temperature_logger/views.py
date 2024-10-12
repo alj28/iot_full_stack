@@ -11,7 +11,6 @@ def _error_response(msg: str, status: int = 400):
     return JsonResponse({'error'    :   f'{msg}'}, satus=status)
 
 def _create_new_temperature_log(request):
-    print("############################ " + str(request))
     data = JSONParser().parse(request)
     serializer = TemperatureLogSerializer(data=data)
     if serializer.is_valid():
@@ -21,12 +20,12 @@ def _create_new_temperature_log(request):
 
 @csrf_exempt
 def temperature_log_view(request):
-    print(f"############# temperature_log_view #############")
     if request.method == 'POST':
         return _create_new_temperature_log(request)
     return _error_response(f'Method {request.method} not supported')
 
 def _temperature_log_list_per_device(request, pk):
+    print(f"######### Request for {pk} received")
     try:
         device = Device.objects.get(pk=pk)
     except Device.DoesNotExist:
@@ -37,7 +36,6 @@ def _temperature_log_list_per_device(request, pk):
 
 @csrf_exempt
 def temperature_log_list_view(request, pk):
-    print(f"############# temperature_log_list_view #############")
     if request.method == 'GET':
         return _temperature_log_list_per_device(request, pk)
     return _error_response(f'Method {request.method} not supported')
