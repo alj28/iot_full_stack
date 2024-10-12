@@ -65,6 +65,8 @@ services:
       - backend_db
     networks:
       - zigbee_network
+    profiles:
+      - manual-start
 
 networks:
   zigbee_network:
