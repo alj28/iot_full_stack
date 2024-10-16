@@ -16,7 +16,11 @@
 			"leds.h": "c",
 			"zigbee.h": "c",
 			"zigbee_error_handler.h": "c",
-			"sensor.h": "c"
+			"sensor.h": "c",
+			"battery_level.h": "c",
+			"kernel.h": "c",
+			"sensors_hub.h": "c",
+			"battery_level_private.h": "c"
 		},
 		"nrf-connect.debugging.bindings": {
 			"${workspaceFolder}/device/build/device": "Launch device"
@@ -26,12 +30,29 @@
 		"version": "0.2.0",
 		"configurations": [
 			{
-				"type": "nrf-connect",
+				"name": "Debug native-posix",
+				"type": "cppdbg",
 				"request": "launch",
-				"name": "Launch device",
-				"config": "${workspaceFolder}/device/build/device",
-				"runToEntryPoint": "main"
-			}
+				"program": "${workspaceFolder}/device/build/zephyr/zephyr.exe", // Path to the compiled program
+				"args": ["-attach_uart"], // Add any command-line arguments if needed
+				"stopAtEntry": true, // Set true to stop at the entry point of the program
+				"cwd": "${workspaceFolder}/device",
+				"environment": [],
+				"externalConsole": false, // Set to true if you want to launch an external console
+				"MIMode": "gdb",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					}
+				],
+				"miDebuggerPath": "/usr/bin/gdb", // Path to gdb
+				"logging": {
+					"engineLogging": true
+				},
+				"internalConsoleOptions": "openOnSessionStart"
+			},
 		]
 	}
 }

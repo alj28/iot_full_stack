@@ -25,3 +25,5 @@ if(${BOARD} STREQUAL "nrf52840dk")
     add_subdirectory(src/communication)
     add_subdirectory(src/ui)
 endif()
+
+add_subdirectory(src/sensors)
