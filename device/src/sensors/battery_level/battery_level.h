@@ -10,4 +10,5 @@ typedef struct
 } battery_level_msg_t;
 
 
+
 #endif /* _BATTERY_LEVEL_H_ */

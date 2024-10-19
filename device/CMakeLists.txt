@@ -13,6 +13,7 @@ target_sources(
     PRIVATE 
     src/main.c
     src/commands.c
+    src/utils.c
 )
 
 target_include_directories(
@@ -21,8 +22,8 @@ target_include_directories(
     src/
 )
 
+add_subdirectory(src/communication)
 if(${BOARD} STREQUAL "nrf52840dk")
-    add_subdirectory(src/communication)
     add_subdirectory(src/ui)
 endif()
 
