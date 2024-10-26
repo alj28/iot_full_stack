@@ -23,7 +23,10 @@
 			"battery_level_private.h": "c",
 			"log.h": "c",
 			"communication_hub.h": "c",
-			"utils.h": "c"
+			"utils.h": "c",
+			"system_private.h": "c",
+			"zbus.h": "c",
+			"system.h": "c"
 		},
 		"nrf-connect.debugging.bindings": {
 			"${workspaceFolder}/device/build/device": "Launch device"

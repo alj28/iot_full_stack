@@ -7,6 +7,8 @@
 #include <zephyr/net/net_ip.h>
 #include <zephyr/net/socket.h>
 
+#include "mqtt.h"
+
 
 // https://docs.zephyrproject.org/latest/connectivity/networking/api/mqtt.html
 
@@ -269,3 +271,28 @@ static int init(void) {
 }
 
 SYS_INIT_NAMED(mqtt, init, APPLICATION, 96);
+
+
+static const uint8_t* const topics[] = {
+    [eMQTT_TOPIC_IDENTIFICATION] = "identification/",
+    [eMQTT_TOPIC_STATUS] = "status/"
+};
+
+static uint32_t unique_message_id = 0;
+int publish_data(eMQTT_TOPIC_t topic, uint8_t* payload, size_t size) {
+    struct mqtt_publish_param param = {
+        .message.topic.qos = MQTT_QOS_1_AT_LEAST_ONCE,
+        .message.topic.topic.utf8 = topics[topic],
+        .message.topic.topic.size = strlen(topics[topic]),
+        .message.payload.data = payload,
+        .message.payload.len = size,
+        .message_id = ++unique_message_id,
+        .dup_flag = 0,
+        .retain_flag = 0
+    }; 
+    int result = mqtt_publish(&data.client_ctx, &param);
+    if (0 != result) {
+        LOG_ERR("MQTT publish failed: %d", result);
+    }
+    return result;
+}

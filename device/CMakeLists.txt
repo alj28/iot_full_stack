@@ -14,6 +14,8 @@ target_sources(
     src/main.c
     src/commands.c
     src/utils.c
+    src/system.c
+    src/system_shell.c
 )
 
 target_include_directories(
