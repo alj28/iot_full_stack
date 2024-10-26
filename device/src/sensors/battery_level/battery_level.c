@@ -10,10 +10,11 @@ LOG_MODULE_REGISTER(battery_level, LOG_LEVEL_INF);
 
 ZBUS_CHAN_DECLARE(sensors_hub_chan);
 
-#define DEFAULT_MAX_UPDATE_RATE                 (1000UL)
+#define DEFAULT_MAX_UPDATE_RATE                 (2500UL)
 #define DEFAULT_NOMINAL_VOLTAGE                 (3000L)
 #define DEFAULT_ALARM_THRESHOLD_ACTIVATE        (2000L)
 #define DEFAULT_ALARM_THRESHOLD_DEACTIVATE      (2200L)
+#define DEFAULT_IS_ENABLED                      (0U)
 
 typedef struct
 {
@@ -33,7 +34,8 @@ static battery_level_data_t data = {
     .nominal_voltage_mv = DEFAULT_NOMINAL_VOLTAGE,
     .measured_voltage_mv = 0L,
     .alarm_threshold_activate_mv = DEFAULT_ALARM_THRESHOLD_ACTIVATE,
-    .alarm_threshold_deactivate_mv = DEFAULT_ALARM_THRESHOLD_DEACTIVATE
+    .alarm_threshold_deactivate_mv = DEFAULT_ALARM_THRESHOLD_DEACTIVATE,
+    .is_enabled = DEFAULT_IS_ENABLED,
 };
 
 static void timer_expired_cb(struct k_timer *timer_id) {
