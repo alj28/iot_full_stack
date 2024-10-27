@@ -16,6 +16,7 @@ target_sources(
     src/utils.c
     src/system.c
     src/system_shell.c
+    src/system_settings.c
 )
 
 target_include_directories(

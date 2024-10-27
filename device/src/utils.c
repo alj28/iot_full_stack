@@ -72,6 +72,40 @@ int utils_single_uint16_arg_shell_cmd(const struct shell *sh, size_t argc, char 
     return (0 != err_count) ? (-EINVAL) : (0);
 }
 
+int utils_single_uint32_arg_shell_cmd(const struct shell *sh, size_t argc, char **argv, void *setter) {
+    int err_count = 0;
+
+    if ((1+1) != argc) {
+        shell_error(sh, "Invalid number of arguments.");
+        return -EINVAL;
+    }
+
+    int value_int = atoi(argv[1]);
+    if ((value_int < 0) || (value_int > UINT32_MAX)) {
+        shell_error(sh, "Argument value %d out of uint32_t range.", value_int);
+        err_count++;
+    }
+    
+    if (NULL == setter) {
+        shell_error(sh, "Run-time error. No setter function.");
+        err_count++;
+    }
+
+    if (0 == err_count) {
+        uint32_t value_uint32 = (int16_t)value_int;
+        utils_single_uint32_t_setter fp_setter = (utils_single_uint32_t_setter)setter;
+        err_count = fp_setter(value_uint32);
+    }
+
+    if (0 == err_count) {
+        shell_print(sh, "OK");
+    } else {
+        shell_error(sh, "NOK");
+    }
+
+    return (0 != err_count) ? (-EINVAL) : (0);
+}
+
 int utils_single_int16_ret_shell_cmd(const struct shell *sh, size_t argc, char **argv, void *getter) {
     int err_count = 0;
     
@@ -106,6 +140,29 @@ int utils_single_uint16_ret_shell_cmd(const struct shell *sh, size_t argc, char 
     if (0 == err_count) {
         utils_single_uint16_t_getter fp_getter = (utils_single_uint16_t_getter)getter;
         uint16_t value = fp_getter();
+        shell_print(sh, "%d", value);
+    }
+
+    if (0 == err_count) {
+        shell_print(sh, "OK");
+    } else {
+        shell_error(sh, "NOK");
+    }
+
+    return (0 != err_count) ? (-EINVAL) : (0);
+}
+
+int utils_single_uint32_ret_shell_cmd(const struct shell *sh, size_t argc, char **argv, void *getter) {
+    int err_count = 0;
+    
+    if (NULL == getter) {
+        shell_error(sh, "Run-time error. No setter function.");
+        err_count++;
+    }
+
+    if (0 == err_count) {
+        utils_single_uint32_t_getter fp_getter = (utils_single_uint32_t_getter)getter;
+        uint32_t value = fp_getter();
         shell_print(sh, "%d", value);
     }
 
