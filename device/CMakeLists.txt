@@ -14,6 +14,7 @@ target_sources(
     src/main.c
     src/commands.c
     src/utils.c
+    src/utils_settings.c
     src/system.c
     src/system_shell.c
     src/system_settings.c
