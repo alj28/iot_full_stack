@@ -71,7 +71,7 @@ static int load_cb(const char *name, size_t len, settings_read_cb read_cb, void 
 
 
 SETTINGS_STATIC_HANDLER_DEFINE(
-    settings_handler,
+    system_settings_handler,
     SETTINGS_SUBSYSTEM_KEY,
     NULL,
     load_cb,
